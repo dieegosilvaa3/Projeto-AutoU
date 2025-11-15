@@ -1,0 +1,77 @@
+INSTALAR ESSAS EXTENSÕES NO TERMINAL DENTRO DO VS CODE
+
+# Instalar Flask
+pip install flask
+
+# Instalar Transformers (modelos de NLP da Hugging Face)
+pip install transformers
+
+# Instalar spaCy
+pip install spacy
+# e baixar o modelo de português
+python -m spacy download pt_core_news_sm
+
+# Instalar pdfminer (para ler PDFs)
+pip install pdfminer.six
+
+pip install -r requirements.txt
+
+pip install transformers torch
+===================================================================================
+Deploy rápido e estável
+• 	Render (Free):
+• 	Crie um “Web Service” vinculando seu repositório.
+• 	Command:  (adicione  no requirements).
+• 	Se o contêiner ficar pesado com , use apenas regras inicialmente.
+• 	Hugging Face Spaces:
+• 	Se quiser um demo mais “show”, pode reimplementar frontend com Gradio.
+• 	Fácil, mas muda a pilha; mantenha o Flask para entregar HTML, se preferir.
+• 	Vercel: melhor para front; para backend Python, costuma exigir setup extra. Se quiser simplicidade, priorize Render.
+Dica prática: deixe uma flag que desativa o modelo em produção se o cold start ficar lento. Seu classificador por regras já cobre grande parte dos casos improdutivos (felicitações/agradecimentos), e os produtivos por palavras-chave comuns.
+=================================================================================
+para rodar o programa, internamente, digite primeiramente: cd email-ai, depois cd python e depois python app.py 
+
+=================================================================================
+tenho python já instalado no computador, porém a instalação foi feita no Microsoft Store, então devo localizar meu Python e depois adicionar o PATH no local do ambiente:
+Pressione Win + R, digite  e pressione Enter.
+• 	Vá em Avançado → Variáveis de Ambiente.
+• 	Na seção Variáveis do sistema, selecione Path e clique em Editar.
+• 	Clique em Novo e cole o caminho da pasta onde está o .
+Exemplo: C:\Users\SEU_USUARIO\AppData\Local\Microsoft\WindowsApps
+=================================================================================
+Assim, quando você faz upload desses arquivos na interface, o sistema passa pelo fluxo completo:
+utils.py lê o arquivo → nlp.py pré-processa → classificacao.py decide a categoria → resposta.py sugere a resposta.
+
+Hugging Face
+API AI
+Python (PATH, NLP, )
+CSS
+HTML
+TXT
+JS
+Flask
+
+from classificacao import classify_email
+=================================================================================
+🚀 Próximos passos possíveis
+Se quiser melhorar:
+• 	Treinar um modelo Hugging Face com seus próprios e-mails rotulados (em vez de usar um modelo de sentimento genérico).
+• 	Adicionar mais categorias além de “produtivo/improdutivo”.
+• 	Usar  como fallback quando as regras não forem suficientes.
+
+Quer que eu te mostre um exemplo de como treinar um modelo Hugging Face com seus próprios e-mails (em CSV) e depois carregar esse modelo no lugar do ?
+=================================================================================
+Tipos de e-mails para treinar o Hugging Face
+Para treinar ou ajustar o modelo, você precisa de um dataset com exemplos reais de e-mails rotulados. Exemplos de categorias que você pode usar:
+- Produtivo:
+- Relatórios de reunião
+- Solicitações de suporte
+- Atualizações de status de projeto
+- Envio de documentos ou contratos
+- Comunicação sobre pagamentos ou faturas
+- Improdutivo:
+- Mensagens de marketing e promoções
+- Saudações sociais (feliz natal, parabéns, etc.)
+- Newsletters automáticas
+- Convites genéricos sem relação com trabalho
+- Spam
