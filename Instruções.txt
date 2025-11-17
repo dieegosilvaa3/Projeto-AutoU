@@ -1,0 +1,93 @@
+===========================================
+INSTRUÇÕES DE INSTALAÇÃO E DEPLOY - PROJETO EMAIL
+===========================================
+
+# Atualizar sistema
+sudo apt update && sudo apt upgrade -y
+
+# Instalar Python, pip e Git
+sudo apt install python3 python3-pip python3-venv git -y
+
+# Instalar Nginx (para proxy reverso)
+sudo apt install nginx -y
+
+# Criar ambiente virtual
+cd ~/email
+python3 -m venv venv
+source venv/bin/activate
+
+# Instalar dependências principais
+pip install --upgrade pip
+pip install flask transformers torch spacy pdfminer.six sentencepiece protobuf gunicorn
+pip install -r requirements.txt
+
+# Baixar modelo de português do spaCy
+python3 -m spacy download pt_core_news_sm
+
+# Rodar app em modo simples (teste)
+python3 app.py
+
+# Rodar com Gunicorn (produção)
+gunicorn -w 2 -b 127.0.0.1:5000 app:app
+
+===========================================
+CONFIGURAÇÃO DO NGINX
+===========================================
+
+# Editar configuração
+sudo nano /etc/nginx/sites-available/default
+
+# Conteúdo do bloco server:
+server {
+    listen 80;
+    server_name 18.228.10.169;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# Testar e reiniciar Nginx
+sudo nginx -t
+sudo systemctl restart nginx
+
+===========================================
+CONFIGURAÇÃO DO SYSTEMD (SERVIÇO EMAIL)
+===========================================
+
+# Criar arquivo de serviço
+sudo nano /etc/systemd/system/email.service
+
+# Conteúdo:
+[Unit]
+Description=Gunicorn instance to serve Flask app
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/email
+Environment="PATH=/home/ubuntu/email/venv/bin"
+ExecStart=/home/ubuntu/email/venv/bin/gunicorn --workers 2 --bind 127.0.0.1:5000 app:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+# Ativar e iniciar serviço
+sudo systemctl daemon-reload
+sudo systemctl enable email
+sudo systemctl start email
+sudo systemctl status email
+
+===========================================
+OBSERVAÇÕES
+===========================================
+
+- O serviço "email" garante que o Flask/Gunicorn subam automaticamente no boot da instância EC2.
+- O Nginx faz a ponte entre a porta 80 (externa) e a porta 5000 (Gunicorn).
+- Você pode acessar o site diretamente em: http://18.228.10.169/
+- Seu computador pessoal não precisa estar ligado; o site roda na nuvem (EC2).
+- Se a instância EC2 for reiniciada, o serviço "email" sobe sozinho.
